@@ -19,7 +19,6 @@ autom4te.cache
 *.tar.gz
 aclocal.m4
 configure
-Build (GNU)
 .autotools
 *.esproj
 TissueStackServer
@@ -34,3 +33,4 @@ test
 dist
 build
 node_modules
+Build\ (GNU)
