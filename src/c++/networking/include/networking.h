@@ -170,6 +170,18 @@ namespace tissuestack
 			tissuestack::services::TissueStackConversionTask * _conversion = nullptr;
     };
 
+    class TissueStackDrawingRequest final : public tissuestack::common::Request
+    {
+        public:
+            static const std::string SERVICE;
+            TissueStackDrawingRequest & operator=(const TissueStackDrawingRequest&) = delete;
+            TissueStackDrawingRequest(const TissueStackDrawingRequest&) = delete;
+            explicit TissueStackDrawingRequest(std::unordered_map<std::string, std::string> & request_parameters);
+            const bool isObsolete() const;
+			const std::string getContent() const;
+            ~TissueStackDrawingRequest();
+    };
+
     class TissueStackServicesRequest final : public tissuestack::common::Request
     {
 		public:

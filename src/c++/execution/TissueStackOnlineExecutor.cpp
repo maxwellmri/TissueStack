@@ -135,7 +135,13 @@ void tissuestack::execution::TissueStackOnlineExecutor::execute(
 					"200 OK",
 					"application/json",
 					response);
-		}
+		} else if (req.get()->getType() == tissuestack::common::Request::Type::TS_DRAWING) {
+			response =
+				tissuestack::utils::Misc::composeHttpResponse(
+					"200 OK",
+					"application/json",
+					"{\"status\":\"OK\"}");
+        }
 	}  catch (tissuestack::common::TissueStackObsoleteRequestException& obsoleteRequest) /* ERRONEOUS REQUESTS */
 	{
 		response =

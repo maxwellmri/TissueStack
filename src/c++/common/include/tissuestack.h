@@ -91,7 +91,8 @@ namespace tissuestack
 					TS_QUERY,
 					TS_TILING,
 					TS_CONVERSION,
-					TS_SERVICES
+					TS_SERVICES,
+                    TS_DRAWING
 				};
 
 				virtual const std::string getContent() const = 0;

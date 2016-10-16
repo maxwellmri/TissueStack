@@ -116,7 +116,8 @@ namespace tissuestack
 		enum TissueStackTaskType
 		{
 			CONVERSION = 0,
-			TILING = 1
+			TILING = 1,
+			DRAWING = 2
 		};
 
 		class TissueStackTask
@@ -158,6 +159,21 @@ namespace tissuestack
 				tissuestack::imaging::TissueStackImageData * _input_data = nullptr;
 				bool _is_zip_file = false;
 				bool _has_been_Unzipped = false;
+		};
+
+		class TissueStackDrawingTask : public TissueStackTask
+		{
+            public:
+                TissueStackDrawingTask & operator=(const TissueStackTask&) = delete;
+                TissueStackDrawingTask(const TissueStackTask&) = delete;
+                TissueStackDrawingTask(
+                        const std::string id,
+                        const std::string input_file,
+                        const tissuestack::imaging::TissueStackRawDiff diff);
+                ~TissueStackDrawingTask();
+                const std::string getOutFile() const;
+                const TissueStackTaskType getType() const;
+                void dumpTaskToDebugLog() const;
 		};
 
 		class TissueStackConversionTask : public TissueStackTask

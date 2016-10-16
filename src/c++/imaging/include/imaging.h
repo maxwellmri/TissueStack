@@ -405,6 +405,30 @@ namespace tissuestack
 				char _2dDimension = '\0';
 		};
 
+        class TissueStackDiffPixel final {
+            public:
+                TissueStackDiffPixel(
+                        int x,
+                        int y,
+                        int z,
+                        unsigned char value);
+                ~TissueStackDiffPixel();
+                int x;
+                int y;
+                int z;
+                unsigned char value;
+        };
+
+        class TissueStackRawDiff
+        {
+            public:
+                TissueStackRawDiff(
+                        TissueStackDiffPixel pixels
+                        );
+                ~TissueStackRawDiff();
+                TissueStackDiffPixel _pixels;
+        };
+
 		class TissueStackRawData final : public TissueStackImageData
 		{
 			public:
@@ -413,6 +437,7 @@ namespace tissuestack
 				const unsigned long long int getFileSizeInBytes() const;
 				const RAW_TYPE getType() const;
 				const RAW_FILE_VERSION getRawVersion() const;
+                void applyDiff(TissueStackRawDiff diff) const;
 			private:
 				void setRawType(int type);
 				void setRawVersion(int version);

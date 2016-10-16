@@ -471,7 +471,7 @@ inline void tissuestack::services::TissueStackTaskQueue::buildTaskFromIndividual
 	 * Layout for task files is as follows:
 	 * -------------------------------------
 	 * 1. line: in file
-	 * 2. line: enum value of type denoting either tiling or conversion
+	 * 2. line: enum value of type denoting either tiling or conversion  TODO: find this
 	 * 3. line:
 	 * 		for conversion: the out file location
 	 * 		for tiling: the following information all separated by |
@@ -526,10 +526,11 @@ inline void tissuestack::services::TissueStackTaskQueue::buildTaskFromIndividual
 
 	// preliminary check
 	if (type != tissuestack::services::TissueStackTaskType::CONVERSION &&
-			type != tissuestack::services::TissueStackTaskType::TILING)
+			type != tissuestack::services::TissueStackTaskType::TILING &&
+			type != tissuestack::services::TissueStackTaskType::DRAWING)
 	{
 		tissuestack::logging::TissueStackLogger::instance()->error(
-				"Task File %s is neither conversion, nor tiling!\n", task_id.c_str());
+				"Task File %s is not drawing, conversion, nor tiling!\n", task_id.c_str());
 		return;
 	}
 
@@ -573,6 +574,9 @@ inline void tissuestack::services::TissueStackTaskQueue::buildTaskFromIndividual
 				tokens[3],
 				static_cast<unsigned short>(atoi(tokens[4].c_str())),
 				tokens[5]);
+		} else if (type == tissuestack::services::TissueStackTaskType::DRAWING)
+		{
+			
 		}
 
 		// some more checks for the progress/total figures

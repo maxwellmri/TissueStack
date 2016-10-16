@@ -72,6 +72,8 @@ const tissuestack::common::Request * const tissuestack::networking::TissueStackR
 			return_request = new tissuestack::networking::TissueStackPreTilingRequest(parameters);
 	else if (tissuestack::networking::TissueStackConversionRequest::SERVICE.compare(service) == 0)
 			return_request = new tissuestack::networking::TissueStackConversionRequest(parameters);
+	else if (tissuestack::networking::TissueStackDrawingRequest::SERVICE.compare(service) == 0)
+            return_request = new tissuestack::networking::TissueStackDrawingRequest(parameters);
 
 	if (return_request == nullptr)
 		THROW_TS_EXCEPTION(tissuestack::common::TissueStackInvalidRequestException,
