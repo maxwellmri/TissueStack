@@ -34,6 +34,7 @@ tissuestack::services::TissueStackTask::TissueStackTask(
 		return;
 	}
 
+
 	this->readImageData();
 }
 

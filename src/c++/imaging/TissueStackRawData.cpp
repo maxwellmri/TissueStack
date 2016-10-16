@@ -35,28 +35,41 @@ void tissuestack::imaging::TissueStackRawData::applyDiff(
         int w_x = this->getDimension('x')->getNumberOfSlices();
         int w_y = this->getDimension('y')->getNumberOfSlices();
         int w_z = this->getDimension('z')->getNumberOfSlices();
-        int px = diff._pixels.x;
-        int py = diff._pixels.y;
-        int pz = diff._pixels.z;
-        int offset_x = this->getDimension('x')->getOffset() + (px + w_y*py + (w_z*w_y)*pz)*3;
-        int offset_y = this->getDimension('y')->getOffset() + (py + w_z*pz + (w_z*w_x)*px)*3;
-        int offset_z = this->getDimension('z')->getOffset() + (px + w_z*pz + (w_y*w_z)*py)*3;
 
         int fd = open(this->getFileName().c_str(), O_WRONLY);
-        // open the file and write TODO: does offset include the header? 
-        lseek(fd, offset_x, SEEK_SET);
-        for (int i = 0; i < 3; i++) {
-            write(fd, &(diff._pixels.value), 1);
-        }
 
-        lseek(fd, offset_y, SEEK_SET);
-        for (int i = 0; i < 3; i++) {
-            write(fd, &(diff._pixels.value), 1);
-        }
+        tissuestack::logging::TissueStackLogger::instance()->debug(
+                "Drawing to image");
 
-        lseek(fd, offset_z, SEEK_SET);
-        for (int i = 0; i < 3; i++) {
-            write(fd, &(diff._pixels.value), 1);
+        for (unsigned int pt = 0; pt < diff._pixels.x.size(); pt++) {
+
+            int px = diff._pixels.x[pt];
+            int py = diff._pixels.y[pt];
+            int pz = diff._pixels.z[pt];
+            unsigned char v = diff._pixels.value[pt];
+
+            int offset_x = this->getDimension('x')->getOffset() + (px + w_y*py + (w_z*w_y)*pz)*3;
+            int offset_y = this->getDimension('y')->getOffset() + (py + w_z*pz + (w_z*w_x)*px)*3;
+            int offset_z = this->getDimension('z')->getOffset() + (px + w_z*pz + (w_y*w_z)*py)*3;
+
+
+            lseek(fd, offset_x, SEEK_SET);
+            for (int i = 0; i < 3; i++) {
+                write(fd, &(v), 1);
+            }
+
+            lseek(fd, offset_y, SEEK_SET);
+            for (int i = 0; i < 3; i++) {
+                write(fd, &(v), 1);
+            }
+
+            lseek(fd, offset_z, SEEK_SET);
+            for (int i = 0; i < 3; i++) {
+                write(fd, &(v), 1);
+            }
+
+		    tissuestack::logging::TissueStackLogger::instance()->debug(
+                    "Drawing point %i", pt);
         }
         close(fd);
 }

@@ -18,7 +18,7 @@
 #include "imaging.h"
 
 tissuestack::imaging::TissueStackDiffPixel::TissueStackDiffPixel(
-        int x, int y, int z, unsigned char value) :
+        std::vector<int> x, std::vector<int> y, std::vector<int> z, std::vector<int> value) :
             x(x), y(y), z(z), value(value)
 {
 }

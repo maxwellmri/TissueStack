@@ -30,7 +30,7 @@ tissuestack::networking::TissueStackDrawingRequest::~TissueStackDrawingRequest()
 tissuestack::networking::TissueStackDrawingRequest::TissueStackDrawingRequest(
         std::unordered_map<std::string, std::string> & request_parameters)
 {
-    int int_x, int_y, int_z;
+    std::vector<int> int_x, int_y, int_z, int_value;
 
     const std::string x =
         tissuestack::utils::Misc::findUnorderedMapEntryWithUpperCaseStringKey(request_parameters, "x");
@@ -38,12 +38,6 @@ tissuestack::networking::TissueStackDrawingRequest::TissueStackDrawingRequest(
         THROW_TS_EXCEPTION(tissuestack::common::TissueStackInvalidRequestException,
                 "Mandatory parameter 'x' was not supplied!");
 
-    try {
-        int_x = std::stoi(x);
-    } catch(...) {
-        THROW_TS_EXCEPTION(tissuestack::common::TissueStackInvalidRequestException,
-                "Mandatory parameter 'x' was not a well formed integer");
-    }
 
     const std::string y =
         tissuestack::utils::Misc::findUnorderedMapEntryWithUpperCaseStringKey(request_parameters, "y");
@@ -51,25 +45,11 @@ tissuestack::networking::TissueStackDrawingRequest::TissueStackDrawingRequest(
         THROW_TS_EXCEPTION(tissuestack::common::TissueStackInvalidRequestException,
                 "Mandatory parameter 'y' was not supplied!");
 
-    try {
-        int_y = std::stoi(y);
-    } catch(...) {
-        THROW_TS_EXCEPTION(tissuestack::common::TissueStackInvalidRequestException,
-                "Mandatory parameter 'y' was not a well formed integer");
-    }
-
     const std::string z =
         tissuestack::utils::Misc::findUnorderedMapEntryWithUpperCaseStringKey(request_parameters, "z");
     if (z.empty())
         THROW_TS_EXCEPTION(tissuestack::common::TissueStackInvalidRequestException,
                 "mandatory parameter 'z' was not supplied!");
-
-    try {
-        int_z = std::stoi(z);
-    } catch(...) {
-        THROW_TS_EXCEPTION(tissuestack::common::TissueStackInvalidRequestException,
-                "Mandatory parameter 'z' was not a well formed integer");
-    }
 
     const std::string value =
         tissuestack::utils::Misc::findUnorderedMapEntryWithUpperCaseStringKey(request_parameters, "value");
@@ -82,14 +62,35 @@ tissuestack::networking::TissueStackDrawingRequest::TissueStackDrawingRequest(
 		THROW_TS_EXCEPTION(tissuestack::common::TissueStackInvalidRequestException,
 			"Mandatory parameter 'dataset' was not supplied!");
 
-    const unsigned char value_d = std::stoi(value);
+    // Tokenize
+    std::vector<std::string> split_x =     tissuestack::utils::Misc::tokenizeString(x, ',');
+    std::vector<std::string> split_y =     tissuestack::utils::Misc::tokenizeString(y, ',');
+    std::vector<std::string> split_z =     tissuestack::utils::Misc::tokenizeString(z, ',');
+    std::vector<std::string> split_value = tissuestack::utils::Misc::tokenizeString(value, ',');
 
-    const tissuestack::imaging::TissueStackDiffPixel pixel(int_x, int_y, int_z, value_d);
+    if (split_x.size() != split_y.size() || split_y.size() != split_z.size() 
+            || split_z.size() != split_value.size()) {
+        THROW_TS_EXCEPTION(tissuestack::common::TissueStackInvalidRequestException,
+            "Lists vary in size!");
+    }
+
+    try {
+        for (unsigned int i = 0; i < split_x.size(); i++) {
+            int_x.push_back(std::stoi(split_x[i]));
+            int_y.push_back(std::stoi(split_y[i]));
+            int_z.push_back(std::stoi(split_z[i]));
+            int_value.push_back(std::stoi(split_value[i]));
+        }
+    } catch(...) {
+        THROW_TS_EXCEPTION(tissuestack::common::TissueStackInvalidRequestException,
+                "Supploed data was not was not a well formed integer");
+    }
+
+    const tissuestack::imaging::TissueStackDiffPixel pixel(int_x, int_y, int_z, int_value);
     tissuestack::imaging::TissueStackRawDiff diff(pixel);
 
-
     const std::vector<const tissuestack::imaging::TissueStackImageData *> ret =
-        tissuestack::database::DataSetDataProvider::queryById(strtoull(dataset.c_str(), NULL, 10)); //TODO: include planes??
+        tissuestack::database::DataSetDataProvider::queryById(strtoull(dataset.c_str(), NULL, 10));
     
     if (ret.empty()) {
 		THROW_TS_EXCEPTION(tissuestack::common::TissueStackInvalidRequestException,
@@ -98,9 +99,13 @@ tissuestack::networking::TissueStackDrawingRequest::TissueStackDrawingRequest(
 
     const tissuestack::imaging::TissueStackImageData * imageData = ret[0];
     std::string filename = imageData->getFileName();
+    
+
+    std::string task_id = 
+            tissuestack::services::TissueStackTaskQueue::instance()->generateTaskId();
 
     new tissuestack::services::TissueStackDrawingTask(
-            tissuestack::services::TissueStackTaskQueue::instance()->generateTaskId(),
+            task_id,
             filename,
             diff);
 
