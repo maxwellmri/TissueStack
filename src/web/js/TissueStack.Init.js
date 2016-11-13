@@ -60,7 +60,7 @@ TissueStack.Init = function () {
 	};
 
 	TissueStack.Utils.sendAjaxRequest(
-		"/" + TissueStack.configuration['server_proxy_path'].value +
+		TissueStack.configuration['server_host'].value + "/" + TissueStack.configuration['server_proxy_path'].value +
 		"/?service=services&sub_service=configuration&action=all", 'GET',
 		function(data, textStatus, jqXHR) {
 			if (!data.response && !data.error) {
@@ -303,6 +303,7 @@ TissueStack.BindGlobalEvents = function () {
 			url += "/";
 		}
 
+    TissueStack.configuration['server_host'].value = url;
 		url += (TissueStack.configuration['server_proxy_path'].value + "/?service=services&sub_service=data&action=all&include_planes=true");
 
 		// contact server

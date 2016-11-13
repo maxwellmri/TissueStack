@@ -19,6 +19,10 @@ if (typeof(TissueStack) == 'undefined') {
 };
 
 TissueStack.configuration = {
+    server_host: {
+      value: "http://tissuestack.mri.ai",
+      description: "tissue stack server",
+    },
 		server_proxy_path :
 		{ 	value: "server",
 			description: "tissue stack server proxy path (relative to the application''s web root directory)"

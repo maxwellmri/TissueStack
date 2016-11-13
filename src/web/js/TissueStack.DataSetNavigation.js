@@ -497,10 +497,10 @@ TissueStack.DataSetNavigation.prototype = {
                            "datasets", dataSetSelected, dataSetOrdinal, null, true, true, !dataSetSelected.data[0].isTiled);
                        TissueStack.ComponentFactory.createDataSetSlider("datasets", dataSetSelected, dataSetOrdinal, "y");
                        TissueStack.ComponentFactory.addProgressBar(dsDiv, dataSetSelected);
-                       TissueStack.ComponentFactory.createColorMapSwitcher(dsDiv);
-                       TissueStack.ComponentFactory.createUrlLink(dsDiv);
-                       TissueStack.ComponentFactory.createContrastSlider(dsDiv, dataSetSelected);
                        TissueStack.ComponentFactory.addMeasuringContextMenu(dsDiv, dataSetSelected);
+
+                       // Toolbar
+                        TissueStack.ComponentFactory.createToolbar(dsDiv, dataSetSelected);
 
                        // last one gets the transparency wheel if overlays
                        if (TissueStack.overlay_datasets && selectedNodes.length > 1 && (n+1) == selectedNodes.length) {

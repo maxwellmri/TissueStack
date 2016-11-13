@@ -780,6 +780,7 @@ TissueStack.Canvas.prototype = {
 		}
 	},
 	updateCoordinateInfo : function(pixelCoords, worldCoords) {
+    console.log(pixelCoords, worldCoords);
 		var oneToOnePixelCoords = {
 				x : pixelCoords.x,
 				y : pixelCoords.y,

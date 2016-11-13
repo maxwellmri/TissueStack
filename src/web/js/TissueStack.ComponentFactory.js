@@ -84,7 +84,7 @@ TissueStack.ComponentFactory = {
 
 			var zoomLevels = eval(dataForPlane.zoomLevels);
 			transformationMatrix = eval(dataForPlane.transformationMatrix);
-
+      console.log(dataForPlane);
 			// create extent
 			var extent =
 				new TissueStack.Extent(
@@ -102,7 +102,7 @@ TissueStack.ComponentFactory = {
 					transformationMatrix,
 					dataForPlane.resolutionMm);
 
-			// create canvas
+      // create canvas
 			var plane = new TissueStack.Canvas(
 					extent,
 					"canvas_" + planeId + "_plane",
@@ -111,11 +111,18 @@ TissueStack.ComponentFactory = {
             if (is2D)
                 plane.flag2D();
 
+      var annotation = new TissueStack.Annotation(
+				dataSet.local_id,
+        "canvas_" + planeId + "_plane",
+        div,
+        plane
+      );
+
 			// for scalebar to know its parent
 			if (i == 0 || is2D) plane.is_main_view = true;
 			if (plane.is_main_view && addScaleBar) plane.updateScaleBar();
 
-            // set the internal db id
+          // set the internal db id
 			plane.id = dataForPlane.id;
 
 			var localHost = document.location.host;
@@ -230,6 +237,7 @@ TissueStack.ComponentFactory = {
 					html +=
 							'<div id="' + dataSetPrefix + '_main_view_canvas" class="canvasview canvas_' + planeId + ' background_canvas">'
 						+ 	'<canvas id="' + dataSetPrefix + '_canvas_' + planeId + '_plane" class="plane"></canvas>'
+            +   '<canvas id="' + dataSetPrefix + '_canvas_' + planeId + '_plane_annotation" class="annotation"></canvas>'
 						+ (includeCrossHair ?
 								'<canvas id="' + dataSetPrefix + '_canvas_'  + planeId + '_plane_cross_overlay" class="cross_overlay"></canvas>'
 								: '')
@@ -245,6 +253,7 @@ TissueStack.ComponentFactory = {
 								'<canvas id="' + dataSetPrefix + '_canvas_' + planeId +
 								'_plane_cross_overlay" class="side_canvas side_canvas_cross_overlay"></canvas>'
 								: '')
+            + '<canvas id="' + dataSetPrefix + '_canvas_' + planeId + '_plane_annotation" class="annotation"></canvas>'
                         + '</div>';
 					break;
 				case 2:
@@ -257,13 +266,13 @@ TissueStack.ComponentFactory = {
 								'<canvas id="' + dataSetPrefix + '_canvas_' + planeId +
 								'_plane_cross_overlay" class="side_canvas side_canvas_cross_overlay"></canvas>'
 								: '')
-                        + '</div>';
+            + '<canvas id="' + dataSetPrefix + '_canvas_' + planeId + '_plane_annotation" class="annotation"></canvas>'
+                        + '</div>'
 					break;
 			}
         }
 
 		html += "</div>";
-
         $("#" + div).append(html);
 
         if (addScaleBar)
@@ -891,11 +900,10 @@ TissueStack.ComponentFactory = {
             return;
         }
 
-        var html = '<div id="' + div + '_color_map" class="color_map_main" title="Choose color For Data Set">'
+        var html = '<div id="' + div + '_color_map" title="Choose color For Data Set">'
                 +  '<select class="color_map_select color_map_style" data-role="none"><option>Uninitialized</option>'
                 +  '</select></div>';
-        $("#" + div).append(html);
-        TissueStack.Utils.updateColorMapChooser();
+      return html;
     }, initColorMapSwitcher : function(div, dataSet) {
         if (!TissueStack.ComponentFactory.checkDataSetObjectIntegrity(dataSet)) {
             alert("ComponentFactory::initColorMapSwitcher => given data set is invalid!");
@@ -935,6 +943,12 @@ TissueStack.ComponentFactory = {
             }
         });
     },
+    createAnnotationTools: function(div) {
+//      var annotationCanvasId = dataSetPrefix + '_canvas_' + planeId + '_plane_annotation';
+//      '<a href="#' + annotationCanvasId + '" class="top_right_button" data-tool="marker">Marker</a>'
+//      '<a href="#' + annotationCanvasId + '" class="top_right_button" data-tool="eraser">Eraser</a>'
+      return "";
+    },
     createUrlLink : function(div) {
         if (!TissueStack.ComponentFactory.checkDivExistence(div)) {
             alert("ComponentFactory::createUrlLink => Failed to add url link control!");
@@ -942,18 +956,29 @@ TissueStack.ComponentFactory = {
         }
 
         var html =
-            '<div class="url_link_main"><a id="' + div + '_url_button" class="top_right_button" style="color: white;" href="#">URL</a>'
+            '<div class="url_link_main"><a id="' + div + '_url_button" style="color: white;" href="#">URL</a>'
             + '<div id="' + div + '_url_box" class="url_box"><div class="url_arrow"></div>'
             + '<div class="url_arrow-border"></div><div id="' + div + '_link_message" class="url_link_message"></div></div></div>';
-        $("#" + div).append(html);
+        return html;
+    }, createToolbar: function(div, dataSet) {
+       var toolbarHtml = '<div class="toolbar">';
+       toolbarHtml += TissueStack.ComponentFactory.createColorMapSwitcher(div);
+       toolbarHtml += TissueStack.ComponentFactory.createAnnotationTools(div);
+       toolbarHtml += TissueStack.ComponentFactory.createUrlLink(div);
+       toolbarHtml += TissueStack.ComponentFactory.createContrastSlider(div, dataSet);
+       toolbarHtml += '</div>';
+       $("#" + div).append(toolbarHtml);
 
-        TissueStack.ComponentFactory.initUrlLink(div);
+       TissueStack.Utils.updateColorMapChooser();
+       TissueStack.ComponentFactory.initUrlLink(div);
+       TissueStack.ComponentFactory.initColorMapSwitcher(div, dataSet);
+       TissueStack.ComponentFactory.initContrastSlider(div, dataSet);
     }, initUrlLink : function(div) {
         if (!TissueStack.ComponentFactory.checkDivExistence(div))
             return;
 
         $('#'+ div + '_url_button').unbind('click').click(function(){
-		  $('#'+ div + '_url_box').toggle();
+		      $('#'+ div + '_url_box').toggle();
         });
     }, createContrastSlider : function(div, dataSet) {
         if (!TissueStack.ComponentFactory.checkDivExistence(div, dataSet)) {
@@ -967,12 +992,10 @@ TissueStack.ComponentFactory = {
         }
 
         var html =
-            '<div class="contrast_main"><a id="' + div + '_toolbox_canvas_button" class="top_right_button" style="color: white;" href="#">CONTRAST</a>'
+            '<div class="contrast_main"><a id="' + div + '_toolbox_canvas_button" style="color: white;" href="#">CONTRAST</a>'
             + '<div id="' + div + '_contrast_box" class="contrast_box"><div class="url_arrow"></div><div class="url_arrow-border"></div><canvas id="'
             + div + '_toolbox_canvas" class="contrast_slider "></canvas></div></div>';
-        $("#" + div).append(html);
-
-        TissueStack.ComponentFactory.initContrastSlider(div, dataSet);
+        return html;
     }, initContrastSlider : function(div, dataSet) {
         if (!TissueStack.ComponentFactory.checkDivExistence(div) ||
             !TissueStack.ComponentFactory.checkDataSetObjectIntegrity(dataSet))

@@ -17,7 +17,7 @@
 TissueStack.DataSetStore = function(afterLoadingRoutine, omitLocalDataFetch) {
 	if (!omitLocalDataFetch) {
 		// fetch all data for the local configuration
-		this.fetchDataSetsFromServer("localhost", null,  afterLoadingRoutine);
+		this.fetchDataSetsFromServer("http://tissuestack.mri.ai", null,  afterLoadingRoutine);
 	}
 };
 
@@ -47,6 +47,7 @@ TissueStack.DataSetStore.prototype = {
 		}
 	},
 	addDataSetToStore : function(dataSet, host) {
+    console.log(dataSet, host);
 		if (!dataSet || !dataSet.planes) {
 			return null;
 		}
@@ -97,12 +98,8 @@ TissueStack.DataSetStore.prototype = {
 
 		return this.datasets[id];
 	}, fetchDataSetsFromServer : function(host, id, customSuccessHandler) {
-		if (!host) {
-			host = "localhost";
-		}
-		var url = (host == 'localhost' ? "" : "http://" + host) + "/" +
-		TissueStack.configuration['server_proxy_path'].value + "/?service=services&sub_service=data";
-		if (!id && host == "localhost") {
+		var url = host + "/" + TissueStack.configuration['server_proxy_path'].value + "/?service=services&sub_service=data";
+		if (!id) {
 			url += "&action=all&include_planes=true";
 			//url += "/list?include_plane_data=true";
 		} else if (!id && host != "localhost") {
@@ -139,7 +136,7 @@ TissueStack.DataSetStore.prototype = {
 					var dataSets = data.response;
 
 					for (var x=0;x<dataSets.length;x++) {
-						_this.addDataSetToStore(dataSets[x], "localhost");
+						_this.addDataSetToStore(dataSets[x], host);
 					}
 
 					if (customSuccessHandler) customSuccessHandler();

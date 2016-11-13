@@ -126,7 +126,7 @@ TissueStack.Utils = {
 		return results;
 	}, loadColorMaps : function(successHandler) {
 		TissueStack.Utils.sendAjaxRequest(
-				"/" + TissueStack.configuration['server_proxy_path'].value + "/?service=services&sub_service=colormaps&action=all", 'GET',
+				TissueStack.configuration['server_host'].value + "/" + TissueStack.configuration['server_proxy_path'].value + "/?service=services&sub_service=colormaps&action=all", 'GET',
 				function(data, textStatus, jqXHR) {
 					if (!data) {
 						alert("Failed To Load Colormaps ....");
@@ -479,7 +479,7 @@ TissueStack.Utils = {
 			image_extension = "png";
 
 		// assemble what we have so far
-		ret.url = (host != "" ? ("http://" + host.replace(/[_]/g,".")) : "");
+		ret.url = (host != "" ? (host.replace(/[_]/g,".")) : "");
 		var path = isTiled ?
 			TissueStack.configuration['tile_directory'].value : TissueStack.configuration['server_proxy_path'].value;
 
@@ -700,7 +700,7 @@ TissueStack.Utils = {
         var host = dataset.host;
         if (typeof(host) != "string" || $.trim(host) == "localhost")
             host = "";
-        host = ($.trim(host) != "" ? ("http://" + host.replace(/[_]/g,".")) : "");
+        host = ($.trim(host) != "" ? (host.replace(/[_]/g,".")) : "");
 
 		var xes = coords.x;
 		var ys = coords.y;

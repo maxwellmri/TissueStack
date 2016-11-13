@@ -94,7 +94,7 @@ TissueStack.Admin.prototype = {
 		 	}
 
 	 		TissueStack.Utils.sendAjaxRequest(
- 				"/" + TissueStack.configuration['server_proxy_path'].value +
+ 				TissueStack.configuration['server_host'].value + "/" + TissueStack.configuration['server_proxy_path'].value +
  				"/?service=services&sub_service=security&action=new_session&password="+ password, 'GET',
  				function(data, textStatus, jqXHR) {
 					if (!data.response && !data.error) {
@@ -146,7 +146,7 @@ TissueStack.Admin.prototype = {
 		 	}
 
 	 		TissueStack.Utils.sendAjaxRequest(
-	 				"/" + TissueStack.configuration['server_proxy_path'].value +
+	 				TissueStack.configuration['server_host'].value + "/" + TissueStack.configuration['server_proxy_path'].value +
 	 				"/?service=services&sub_service=security&action=passwd&old_passwd="+ old_password
 	 				+ "&new_passwd=" + new_password, 'GET',
  				function(data, textStatus, jqXHR) {
@@ -234,7 +234,7 @@ TissueStack.Admin.prototype = {
 	displayUploadDirectory : function (){
 		//var _this = this;
 	     $(".file_radio_list").show(function(){
-	    	 var url = "/" + TissueStack.configuration['server_proxy_path'].value +
+	    	 var url = TissueStack.configuration['server_host'].value + "/" + TissueStack.configuration['server_proxy_path'].value +
 	    	 	"/?service=services&sub_service=admin&action=";
 	    	 var action = $('input[name=radio_task]:checked').val();
 	    	 if (typeof(action) == 'string' && action === 'PreTile')
@@ -354,13 +354,13 @@ TissueStack.Admin.prototype = {
             $('.error_message').css("background", "#32CD32");
 
             TissueStack.Utils.sendAjaxRequest(
-                "/" + TissueStack.configuration['server_proxy_path'].value +
+                TissueStack.configuration['server_host'].value + "/" + TissueStack.configuration['server_proxy_path'].value +
                  "/?service=services&sub_service=admin&action=upload_progress&file=" + filename,
                 'GET');
         }
 
         $("#uploadForm").ajaxSubmit({
-            url : "/" + TissueStack.configuration['server_proxy_path'].value +
+            url : TissueStack.configuration['server_host'].value + "/" + TissueStack.configuration['server_proxy_path'].value +
                 "/?service=services&sub_service=admin&action=upload&session=" + _this.session,
             dataType : "json",
             success: function(data, textStatus, jqXHR) {
@@ -384,7 +384,7 @@ TissueStack.Admin.prototype = {
         // the periodic request
         progressUpdater = setInterval(function () {
             TissueStack.Utils.sendAjaxRequest(
-                    "/" + TissueStack.configuration['server_proxy_path'].value +
+                    TissueStack.configuration['server_host'].value + "/" + TissueStack.configuration['server_proxy_path'].value +
                      "/?service=services&sub_service=admin&action=upload_progress&file=" + filename,
                     'GET',
                     function(data, textStatus, jqXHR) {
@@ -427,7 +427,7 @@ TissueStack.Admin.prototype = {
 	checkExistenceOfFileInUploadDirectory : function(filename)	{
 		var _this = this;
 		TissueStack.Utils.sendAjaxRequest(
-			"/" + TissueStack.configuration['server_proxy_path'].value +
+			TissueStack.configuration['server_host'].value + "/" + TissueStack.configuration['server_proxy_path'].value +
 			"/?service=services&sub_service=admin&action=file_exists&file=" +
 			TissueStack.configuration['upload_directory'].value + "/" + filename +
 			"&session=" + _this.session, 'GET',
@@ -448,7 +448,7 @@ TissueStack.Admin.prototype = {
 
 				    // send a deletion request
 					TissueStack.Utils.sendAjaxRequest(
-						"/" + TissueStack.configuration['server_proxy_path'].value +
+						TissueStack.configuration['server_host'].value + "/" + TissueStack.configuration['server_proxy_path'].value +
 						"/?service=services&sub_service=admin&action=file_delete&file=" +
 						TissueStack.configuration['upload_directory'].value + "/" + filename +
 						"&session=" + _this.session, 'GET',
@@ -486,7 +486,7 @@ TissueStack.Admin.prototype = {
 	}, checkExistenceOfFileInDataDirectory : function(filename, msgDescription)	{
         var _this = this;
 		TissueStack.Utils.sendAjaxRequest(
-			"/" + TissueStack.configuration['server_proxy_path'].value +
+			TissueStack.configuration['server_host'].value + "/" + TissueStack.configuration['server_proxy_path'].value +
 			"/?service=services&sub_service=admin&action=file_exists&file=" +
 			TissueStack.configuration['data_directory'].value + "/" + filename +
 			"&session=" + _this.session, 'GET',
@@ -516,7 +516,7 @@ TissueStack.Admin.prototype = {
 
 				    // send a rename request
 					TissueStack.Utils.sendAjaxRequest(
-						"/" + TissueStack.configuration['server_proxy_path'].value +
+						TissueStack.configuration['server_host'].value + "/" + TissueStack.configuration['server_proxy_path'].value +
 						"/?service=services&sub_service=admin&action=file_rename&file=" +
 						TissueStack.configuration['upload_directory'].value + "/" + filename +
 						"&new_file=" +
@@ -648,7 +648,7 @@ TissueStack.Admin.prototype = {
 			  			if (action != "PreTile" && i > 0) break;
 
 						// the url to contact (will be completed by whatever action we want to carry out
-						var url = "/" + TissueStack.configuration['server_proxy_path'].value +
+						var url = TissueStack.configuration['server_host'].value + "/" + TissueStack.configuration['server_proxy_path'].value +
 							"/?service=";
 
 						// set the individual bits for the selected action
@@ -716,7 +716,7 @@ TissueStack.Admin.prototype = {
 	addDataSet : function(filename, msgDescription) {
         var _this = this;
         TissueStack.Utils.sendAjaxRequest(
-            "/" + TissueStack.configuration['server_proxy_path'].value +
+            TissueStack.configuration['server_host'].value + "/" + TissueStack.configuration['server_proxy_path'].value +
             "/?service=services&sub_service=admin&action=add_dataset&session=" +
                 _this.session + "&filename=" + filename + "&description=" + msgDescription,
             'GET',
@@ -728,7 +728,7 @@ TissueStack.Admin.prototype = {
 
                 if (data.response) {
                     var dataSet = data.response;
-            		var addedDataSet = TissueStack.dataSetStore.addDataSetToStore(dataSet, "localhost");
+            		var addedDataSet = TissueStack.dataSetStore.addDataSetToStore(dataSet, TissueStack.configuration['server_host'].value);
             		if (addedDataSet) {
             			if(TissueStack.desktop)	TissueStack.dataSetNavigation.addDataSetToDynaTree(addedDataSet);
             			if (TissueStack.tablet) TissueStack.dataSetNavigation.addDataSetToTabletTree(addedDataSet);
@@ -849,7 +849,7 @@ TissueStack.Admin.prototype = {
 		var _this = this;
 		$('#cancel_' + id).click(function() {
 		   TissueStack.Utils.sendAjaxRequest(
-				"/" + TissueStack.configuration['server_proxy_path'].value +
+				TissueStack.configuration['server_host'].value + "/" + TissueStack.configuration['server_proxy_path'].value +
 					"/?service=services&sub_service=admin&action=cancel" +
 				"&session=" + _this.session + "&task_id=" + id, 'GET',
 				function(data, textStatus, jqXHR) {
@@ -900,7 +900,7 @@ TissueStack.Admin.prototype = {
 
 		this.queue_handles[id] = setInterval(function () {
 			TissueStack.Utils.sendAjaxRequest(
-				"/" + TissueStack.configuration['server_proxy_path'].value +
+				TissueStack.configuration['server_host'].value + "/" + TissueStack.configuration['server_proxy_path'].value +
 					"/?service=services&sub_service=admin&action=progress&task_id=" + id, 'GET',
 				function(data, textStatus, jqXHR) {
 					if (!data.response && !data.error) {
@@ -969,7 +969,7 @@ TissueStack.Admin.prototype = {
 		if (!__this.session || !id) return;
 
 		TissueStack.Utils.sendAjaxRequest(
-			"/" + TissueStack.configuration['server_proxy_path'].value +
+			TissueStack.configuration['server_host'].value + "/" + TissueStack.configuration['server_proxy_path'].value +
 				"/?service=services&sub_service=admin&action=toggle_tiling" +
 			"&session=" + __this.session + "&id=" + id + "&flag=" + flag, 'GET',
 			function(data, textStatus, jqXHR) {
